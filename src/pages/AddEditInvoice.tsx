@@ -140,15 +140,12 @@ export default function AddEditInvoice() {
         invoiceId = docRef.id;
       }
 
-      // Send email if email is provided
-      let emailSent = false;
       if (values.email && values.email.trim()) {
         try {
           messageApi.loading('Sending email...', 0);
           await sendInvoiceEmail(invoiceId, values.email, values.client, values.amount);
           messageApi.destroy();
           messageApi.success('📧 Invoice emailed successfully!');
-          emailSent = true;
 
           setTimeout(() => {
             navigate('/')

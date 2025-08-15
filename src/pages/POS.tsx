@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Card, Row, Col, Button, Table, Input, Select, Space, Typography, InputNumber, message, Spin } from 'antd';
-import { PlusOutlined, MinusOutlined, ShoppingCartOutlined, DeleteOutlined, MailOutlined, LoadingOutlined } from '@ant-design/icons';
+import { PlusOutlined, MinusOutlined, ShoppingCartOutlined, DeleteOutlined, LoadingOutlined } from '@ant-design/icons';
 import { collection, onSnapshot, addDoc, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 import type { Product, CartItem, Sale } from '../types';
@@ -21,7 +21,6 @@ export default function POS() {
   const [customerEmail, setCustomerEmail] = useState('');
   const [category, setCategory] = useState('All');
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card' | 'digital'>('cash');
-  const [processingEmail, setProcessingEmail] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -132,19 +131,16 @@ export default function POS() {
       // Handle email sending
       if (customerEmail && customer) {
         try {
-          setProcessingEmail(true);
           await sendInvoiceEmail(invoiceRef.id, customerEmail, cart, customer);
-          messageApi.success('📧 Invoice emailed successfully!');
+          messageApi.success('Invoice emailed successfully!');
         } catch (error) {
           console.error('Email error:', error);
-          messageApi.error('❌ Failed to send email');
-        } finally {
-          setProcessingEmail(false);
+          messageApi.error('Failed to send email');
         }
       }
 
       // Show simple success message
-      messageApi.success('🎉 Sale completed successfully!', 3);
+      messageApi.success('Sale completed successfully!', 3);
 
       // Clear cart and form
       setCart([]);
@@ -154,7 +150,7 @@ export default function POS() {
     } catch (error) {
       messageApi.destroy(); // Destroy loading message
       console.error('Error processing sale:', error);
-      messageApi.error('❌ Error processing sale. Please try again.');
+      messageApi.error('Error processing sale. Please try again.');
     }
   };
 
@@ -165,7 +161,7 @@ export default function POS() {
       console.log('📨 Recipient email:', email);
       
       if (!EMAIL_CONFIG.PUBLIC_KEY || EMAIL_CONFIG.PUBLIC_KEY === 'YOUR_EMAILJS_PUBLIC_KEY') {
-        throw new Error('❌ EmailJS not configured. Please update EMAIL_CONFIG in /src/config/email.ts');
+        throw new Error('EmailJS not configured. Please update EMAIL_CONFIG in /src/config/email.ts');
       }
 
       if (!email || email.trim() === '') {
