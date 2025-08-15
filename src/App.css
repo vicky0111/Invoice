@@ -1,0 +1,138 @@
+#root {
+  margin: 0 auto;
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f7f8fa;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    padding: 32px 24px 40px 24px;
+  }
+
+  .navbar {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 16px;
+  }
+  .navbar a {
+    color: #333;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: color 0.2s;
+  }
+  .navbar a:hover, .navbar .active {
+    color: #4f8cff;
+  }
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  .dashboard-header h1 {
+    margin: 0;
+  }
+  .dashboard-header button {
+    background: #4f8cff;
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .dashboard-header button:hover {
+    background: #2563eb;
+  }
+
+  .invoice-form {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .invoice-form input, .invoice-form select {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  .invoice-form button {
+    background: #4f8cff;
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .invoice-form button:hover {
+    background: #2563eb;
+  }
+
+  .filters {
+    margin-bottom: 18px;
+  }
+  .filters button {
+    background: #f1f5fb;
+    color: #333;
+    border: 1px solid #e0e7ef;
+    padding: 6px 16px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  .filters button.active, .filters button:hover {
+    background: #4f8cff;
+    color: #fff;
+  }
+
+  button {
+    outline: none;
+  }
+  tr td button {
+    margin-right: 8px;
+    margin-bottom: 2px;
+  }
+
+  .notification {
+    background: #e0f7fa;
+    color: #00796b;
+    padding: 12px 18px;
+    border-radius: 6px;
+    margin-bottom: 18px;
+    font-size: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  @media (max-width: 700px) {
+    .container {
+      padding: 10px 2vw 30px 2vw;
+    }
+    .invoice-form {
+      flex-direction: column;
+      gap: 8px;
+    }
+    .dashboard-header {
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
+    }
+  }
+}

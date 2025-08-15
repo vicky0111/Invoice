@@ -1,0 +1,243 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  color: #1e293b;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.ant-table {
+  background: #ffffff !important;
+  color: #1e293b !important;
+}
+
+.ant-table-thead > tr > th {
+  background: #f8fafc !important;
+  color: #1e293b !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  font-weight: 600 !important;
+}
+
+.ant-table-tbody > tr > td {
+  background: #ffffff !important;
+  color: #1e293b !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: #f1f5f9 !important;
+}
+
+.ant-table-cell {
+  color: #1e293b !important;
+}
+
+.ant-table-thead .ant-table-cell {
+  color: #1e293b !important;
+  font-weight: 600 !important;
+}
+
+/* Fix table header text visibility */
+.ant-table-thead > tr > th .ant-table-header-column {
+  color: #1e293b !important;
+}
+
+.ant-table-thead > tr > th .ant-table-column-title {
+  color: #1e293b !important;
+  font-weight: 600 !important;
+}
+
+.ant-card {
+  background: #ffffff !important;
+  color: #1e293b !important;
+}
+
+.ant-card-head {
+  background: #f8fafc !important;
+  color: #1e293b !important;
+}
+
+.ant-card-head-title {
+  color: #1e293b !important;
+}
+
+.ant-typography {
+  color: #1e293b !important;
+}
+
+.ant-typography h1,
+.ant-typography h2,
+.ant-typography h3,
+.ant-typography h4,
+.ant-typography h5,
+.ant-typography h6 {
+  color: #1e293b !important;
+}
+
+.ant-btn {
+  color: #1e293b !important;
+}
+
+.ant-btn-default {
+  background: #ffffff !important;
+  border-color: #d1d5db !important;
+  color: #1e293b !important;
+}
+
+.ant-statistic-title {
+  color: #64748b !important;
+}
+
+.ant-statistic-content {
+  color: #1e293b !important;
+}
+
+/* Fix table loading spinner visibility */
+.ant-spin {
+  color: #6366f1 !important;
+}
+
+.ant-spin-dot-item {
+  background-color: #6366f1 !important;
+}
+
+.ant-table-placeholder .ant-table-cell {
+  color: #64748b !important;
+}
+
+/* Prevent horizontal overflow */
+.ant-layout {
+  overflow-x: hidden !important;
+}
+
+.ant-table-wrapper {
+  overflow-x: auto !important;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+
+
+/* Print styles */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  body {
+    background: white !important;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .no-print,
+  .ant-layout-header,
+  .ant-layout-sider,
+  .ant-breadcrumb,
+  .ant-menu,
+  .ant-affix,
+  button,
+  .ant-btn,
+  .ant-pagination,
+  .ant-back-top,
+  nav,
+  .ant-drawer,
+  .ant-modal,
+  .ant-notification,
+  .ant-message,
+  .ant-tooltip {
+    display: none !important;
+  }
+  
+  .ant-layout {
+    background: white !important;
+  }
+  
+  .ant-layout-content {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  .ant-card {
+    box-shadow: none !important;
+    border: none !important;
+    background: white !important;
+    margin: 0 !important;
+    padding: 20px !important;
+  }
+  
+  .ant-card-body {
+    padding: 0 !important;
+  }
+  
+  .ant-typography,
+  .ant-typography h1,
+  .ant-typography h2,
+  .ant-typography h3,
+  .ant-typography h4,
+  .ant-typography h5,
+  .ant-typography h6 {
+    color: black !important;
+  }
+  
+  .ant-divider {
+    border-color: #000 !important;
+  }
+  
+  @page {
+    margin: 1cm;
+    size: A4;
+  }
+}
