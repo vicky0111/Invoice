@@ -17,6 +17,7 @@ import {
 import { ArrowLeftOutlined, SaveOutlined, MailOutlined } from '@ant-design/icons';
 import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useAuth } from '../contexts/AuthContext';
 import type { Invoice } from '../types';
 import dayjs from 'dayjs';
 import emailjs from '@emailjs/browser';
@@ -27,6 +28,7 @@ const { Option } = Select;
 const { TextArea } = Input;
 
 export default function AddEditInvoice() {
+  const { user } = useAuth();
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -122,7 +124,8 @@ export default function AddEditInvoice() {
         description: values.description,
         dueDate: values.dueDate.format('YYYY-MM-DD'),
         status: values.status || 'Pending',
-        createdAt: isEdit ? undefined : new Date()
+        createdAt: isEdit ? undefined : new Date(),
+        userId: user?.uid
       };
 
       let invoiceId: string;

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Card, Row, Col, Button, Table, Input, Select, Space, Typography, InputNumber, message, Spin } from 'antd';
 import { PlusOutlined, MinusOutlined, ShoppingCartOutlined, DeleteOutlined, LoadingOutlined } from '@ant-design/icons';
-import { collection, onSnapshot, addDoc, updateDoc, doc } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, updateDoc, doc, query, where } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useAuth } from '../contexts/AuthContext';
 import type { Product, CartItem, Sale } from '../types';
 import emailjs from '@emailjs/browser';
 import { EMAIL_CONFIG } from '../config/email';
@@ -13,6 +14,7 @@ const { Option } = Select;
 const categories = ['All', 'General', 'Beverages', 'Snacks', 'Electronics', 'Clothing', 'Other'];
 
 export default function POS() {
+  const { user } = useAuth();
   const [messageApi, contextHolder] = message.useMessage();
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
@@ -23,8 +25,15 @@ export default function POS() {
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card' | 'digital'>('cash');
 
   useEffect(() => {
+    if (!user) return;
+
     setLoading(true);
-    const unsub = onSnapshot(collection(db, 'products'), (snapshot) => {
+    const q = query(
+      collection(db, 'products'),
+      where('userId', '==', user.uid)
+    );
+
+    const unsub = onSnapshot(q, (snapshot) => {
       const prods = snapshot.docs.map((doc) => ({ 
         id: doc.id, 
         ...doc.data() 
@@ -33,7 +42,7 @@ export default function POS() {
       setLoading(false);
     });
     return () => unsub();
-  }, []);
+  }, [user]);
 
   const addToCart = (product: Product) => {
     if (!product.id) return;
@@ -92,7 +101,8 @@ export default function POS() {
         total: getTotalAmount(),
         paymentMethod,
         timestamp: new Date(),
-        cashier: customer || 'Anonymous'
+        cashier: customer || 'Anonymous',
+        userId: user?.uid
       };
 
       const saleRef = await addDoc(collection(db, 'sales'), sale);
@@ -111,7 +121,8 @@ export default function POS() {
         dueDate: new Date().toISOString().split('T')[0],
         status: 'Paid' as const,
         createdAt: new Date(),
-        saleId: saleRef.id
+        saleId: saleRef.id,
+        userId: user?.uid
       };
 
       const invoiceRef = await addDoc(collection(db, 'invoices'), invoiceData);

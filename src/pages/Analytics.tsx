@@ -4,39 +4,60 @@ import {
   ShoppingCartOutlined, 
   UserOutlined
 } from '@ant-design/icons';
-import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
+import { collection, onSnapshot, query, limit, where } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useAuth } from '../contexts/AuthContext';
 import type { Sale, Product, Invoice } from '../types';
 
 const { Title } = Typography;
 
 export default function Analytics() {
+  const { user } = useAuth();
   const [sales, setSales] = useState<Sale[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
 
   useEffect(() => {
+    if (!user) return;
+
     const unsubSales = onSnapshot(
-      query(collection(db, 'sales'), orderBy('timestamp', 'desc'), limit(100)),
+      query(
+        collection(db, 'sales'), 
+        where('userId', '==', user.uid),
+        limit(100)
+      ),
       (snapshot) => {
-        setSales(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Sale)));
+        const salesData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Sale));
+        // Sort on the client side to avoid index requirements
+        salesData.sort((a, b) => {
+          const aTime = a.timestamp?.toDate?.() || new Date(a.timestamp);
+          const bTime = b.timestamp?.toDate?.() || new Date(b.timestamp);
+          return bTime.getTime() - aTime.getTime();
+        });
+        setSales(salesData);
       }
     );
 
-    const unsubProducts = onSnapshot(collection(db, 'products'), (snapshot) => {
-      setProducts(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Product)));
-    });
+    const unsubProducts = onSnapshot(
+      query(collection(db, 'products'), where('userId', '==', user.uid)), 
+      (snapshot) => {
+        setProducts(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Product)));
+      }
+    );
 
-    const unsubInvoices = onSnapshot(collection(db, 'invoices'), (snapshot) => {
-      setInvoices(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Invoice)));
-    });
+    const unsubInvoices = onSnapshot(
+      query(collection(db, 'invoices'), where('userId', '==', user.uid)), 
+      (snapshot) => {
+        setInvoices(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Invoice)));
+      }
+    );
 
     return () => {
       unsubSales();
       unsubProducts();
       unsubInvoices();
     };
-  }, []);
+  }, [user]);
 
   const totalRevenue = sales.reduce((sum, sale) => sum + sale.total, 0);
   const totalInvoiceAmount = invoices.reduce((sum, invoice) => sum + invoice.amount, 0);

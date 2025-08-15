@@ -2,13 +2,15 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Table, Button, Tag, Space, Typography, Row, Col, message, Spin } from 'antd';
 import { PlusOutlined, EyeOutlined, PrinterOutlined, CheckOutlined, LoadingOutlined } from '@ant-design/icons';
-import { collection, onSnapshot, updateDoc, doc } from 'firebase/firestore';
+import { collection, onSnapshot, updateDoc, doc, query, where } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useAuth } from '../contexts/AuthContext';
 import type { Invoice, InvoiceStatus } from '../types';
 
 const { Title } = Typography;
 
 export default function Dashboard() {
+  const { user } = useAuth();
   const [messageApi, contextHolder] = message.useMessage();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [filter, setFilter] = useState<'All' | InvoiceStatus>('All');
@@ -16,7 +18,14 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, 'invoices'), (snapshot) => {
+    if (!user) return;
+
+    const q = query(
+      collection(db, 'invoices'),
+      where('userId', '==', user.uid)
+    );
+
+    const unsub = onSnapshot(q, (snapshot) => {
       const invoiceData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Invoice));
       setInvoices(invoiceData);
       setLoading(false);
@@ -28,7 +37,7 @@ export default function Dashboard() {
     return () => {
       unsub();
     };
-  }, []);
+  }, [user]);
 
   const markAsPaid = async (id?: string) => {
     if (!id) return;

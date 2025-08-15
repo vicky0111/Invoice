@@ -23,8 +23,9 @@ import {
   DeleteOutlined, 
   WarningOutlined 
 } from '@ant-design/icons';
-import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useAuth } from '../contexts/AuthContext';
 import type { Product } from '../types';
 
 const { Title } = Typography;
@@ -33,6 +34,7 @@ const { Option } = Select;
 const categories = ['General', 'Beverages', 'Snacks', 'Electronics', 'Clothing', 'Other'];
 
 export default function Products() {
+  const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
@@ -43,12 +45,19 @@ export default function Products() {
   const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
+    if (!user) return;
+
     const timeoutId = setTimeout(() => {
       setLoading(false);
     }, 5000);
 
+    const q = query(
+      collection(db, 'products'),
+      where('userId', '==', user.uid)
+    );
+
     const unsub = onSnapshot(
-      collection(db, 'products'), 
+      q, 
       (snapshot) => {
         const prods = snapshot.docs.map((doc) => ({ 
           id: doc.id, 
@@ -70,7 +79,7 @@ export default function Products() {
       unsub();
       clearTimeout(timeoutId);
     };
-  }, []);
+  }, [user, messageApi]);
 
   const handleAddProduct = () => {
     setEditingProduct(null);
@@ -125,6 +134,7 @@ export default function Products() {
         price: price,
         stock: stock,
         lowStockThreshold: lowStockThreshold,
+        userId: user?.uid,
       };
 
       if (values.description && values.description.trim()) {

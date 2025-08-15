@@ -16,6 +16,7 @@ export interface Invoice {
   status: InvoiceStatus;
   createdAt?: any;
   saleId?: string;
+  userId?: string;
 }
 
 export interface Product {
@@ -27,6 +28,7 @@ export interface Product {
   lowStockThreshold: number;
   description?: string;
   barcode?: string;
+  userId?: string;
 }
 
 export interface Sale {
@@ -43,6 +45,7 @@ export interface Sale {
   paymentMethod: 'cash' | 'card' | 'digital';
   timestamp: any;
   cashier?: string;
+  userId?: string;
 }
 
 export interface CartItem {

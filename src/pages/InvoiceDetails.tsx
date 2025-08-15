@@ -21,12 +21,14 @@ import {
 } from '@ant-design/icons';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useAuth } from '../contexts/AuthContext';
 import type { Invoice, InvoiceStatus } from '../types';
 import dayjs from 'dayjs';
 
 const { Title, Text } = Typography;
 
 export default function InvoiceDetails() {
+  const { user } = useAuth();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -35,10 +37,10 @@ export default function InvoiceDetails() {
   const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
-    if (id) {
+    if (id && user) {
       fetchInvoice(id);
     }
-  }, [id]);
+  }, [id, user]);
 
   const fetchInvoice = async (invoiceId: string) => {
     try {
@@ -47,7 +49,16 @@ export default function InvoiceDetails() {
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
-        setInvoice({ id: docSnap.id, ...docSnap.data() } as Invoice);
+        const invoiceData = { id: docSnap.id, ...docSnap.data() } as Invoice;
+        
+        // Security check: ensure the invoice belongs to the current user
+        if (invoiceData.userId !== user?.uid) {
+          messageApi.error('Access denied: Invoice not found');
+          navigate('/');
+          return;
+        }
+        
+        setInvoice(invoiceData);
       } else {
         messageApi.error('Invoice not found');
         navigate('/');

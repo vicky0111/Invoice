@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Card, Table, Typography, Row, Col, DatePicker, Input, Button, Tag, Space, Statistic } from 'antd';
 import { SearchOutlined, CalendarOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useAuth } from '../contexts/AuthContext';
 import type { Sale } from '../types';
 import dayjs from 'dayjs';
 
@@ -10,6 +11,7 @@ const { Title } = Typography;
 const { RangePicker } = DatePicker;
 
 export default function SalesHistory() {
+  const { user } = useAuth();
   const [sales, setSales] = useState<Sale[]>([]);
   const [filteredSales, setFilteredSales] = useState<Sale[]>([]);
   const [loading, setLoading] = useState(true);
@@ -17,14 +19,27 @@ export default function SalesHistory() {
   const [dateRange, setDateRange] = useState<any>(null);
 
   useEffect(() => {
+    if (!user) return;
+
     const unsubscribe = onSnapshot(
-      query(collection(db, 'sales'), orderBy('timestamp', 'desc')),
+      query(
+        collection(db, 'sales'), 
+        where('userId', '==', user.uid)
+      ),
       (snapshot) => {
         const salesData = snapshot.docs.map((doc) => ({ 
           id: doc.id, 
           ...doc.data(),
           timestamp: doc.data().timestamp?.toDate() || new Date()
         } as Sale));
+        
+        // Sort on the client side to avoid index requirements
+        salesData.sort((a, b) => {
+          const aTime = new Date(a.timestamp);
+          const bTime = new Date(b.timestamp);
+          return bTime.getTime() - aTime.getTime();
+        });
+        
         setSales(salesData);
         setFilteredSales(salesData);
         setLoading(false);
@@ -36,7 +51,7 @@ export default function SalesHistory() {
     );
 
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     let filtered = sales;

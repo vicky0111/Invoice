@@ -4,6 +4,7 @@ import { Card, Typography, Button, Row, Col, Spin, Space, Divider, Table } from 
 import { PrinterOutlined, ArrowLeftOutlined, DownloadOutlined } from '@ant-design/icons';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useAuth } from '../contexts/AuthContext';
 import type { Invoice } from '../types';
 import jsPDF from 'jspdf';
 import dayjs from 'dayjs';
@@ -11,16 +12,17 @@ import dayjs from 'dayjs';
 const { Title, Text } = Typography;
 
 export default function PrintInvoice() {
+  const { user } = useAuth();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (id) {
+    if (id && user) {
       fetchInvoice(id);
     }
-  }, [id]);
+  }, [id, user]);
 
   const fetchInvoice = async (invoiceId: string) => {
     try {
@@ -28,7 +30,16 @@ export default function PrintInvoice() {
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
-        setInvoice({ id: docSnap.id, ...docSnap.data() } as Invoice);
+        const invoiceData = { id: docSnap.id, ...docSnap.data() } as Invoice;
+        
+        // Security check: ensure the invoice belongs to the current user
+        if (invoiceData.userId !== user?.uid) {
+          console.error('Access denied: Invoice not found');
+          navigate('/');
+          return;
+        }
+        
+        setInvoice(invoiceData);
       }
     } catch (error) {
       console.error('Error fetching invoice:', error);
