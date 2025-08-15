@@ -124,11 +124,8 @@ export default function POS() {
           });
         }
       }
-
-      // Destroy the loading message
       messageApi.destroy();
 
-      // Handle email sending
       if (customerEmail && customer) {
         try {
           await sendInvoiceEmail(invoiceRef.id, customerEmail, cart, customer);
@@ -139,16 +136,14 @@ export default function POS() {
         }
       }
 
-      // Show simple success message
       messageApi.success('Sale completed successfully!', 3);
 
-      // Clear cart and form
       setCart([]);
       setCustomer('');
       setCustomerEmail('');
       
     } catch (error) {
-      messageApi.destroy(); // Destroy loading message
+      messageApi.destroy();
       console.error('Error processing sale:', error);
       messageApi.error('Error processing sale. Please try again.');
     }
